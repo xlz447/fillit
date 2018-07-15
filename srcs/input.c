@@ -23,14 +23,18 @@ int		checkshape(char *buf)
 	{
 		if (buf[i] == '#')
 		{
-			if (buf[i - 1] == '#')
-				c++;
-			if (buf[i + 1] == '#')
-				c++;
-			if (buf[i - 5] == '#')
-				c++;
-			if (buf[i + 5] == '#')
-				c++;
+			if (i - 1 >= 0)
+				if (buf[i - 1] == '#')
+					c++;
+			if (i + 1 <= 20)
+				if (buf[i + 1] == '#')
+					c++;
+			if (i - 5 >= 0)
+				if (buf[i - 5] == '#')
+					c++;
+			if (i + 5 <= 20)
+				if (buf[i + 5] == '#')
+					c++;
 		}
 		i++;
 	}
