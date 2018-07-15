@@ -18,4 +18,7 @@
 # include <fcntl.h>
 # include <stdlib.h>
 # include "libft.h"
+
+void	solve(char **shapes, int c);
+
 #endif

@@ -17,26 +17,21 @@ int		checkshape(char *buf)
 	int c;
 	int i;
 
-	i = 0;
+	i = -1;
 	c = 0;
-	while (i < 20)
+	while (++i < 20)
 	{
 		if (buf[i] == '#')
 		{
-			if (i - 1 >= 0)
-				if (buf[i - 1] == '#')
-					c++;
-			if (i + 1 <= 20)
-				if (buf[i + 1] == '#')
-					c++;
-			if (i - 5 >= 0)
-				if (buf[i - 5] == '#')
-					c++;
-			if (i + 5 <= 20)
-				if (buf[i + 5] == '#')
-					c++;
+			if (i >= 1 && buf[i - 1] == '#')
+				c++;
+			if (i < 19 && buf[i + 1] == '#')
+				c++;
+			if (i >= 5 && buf[i - 5] == '#')
+				c++;
+			if (i < 15 && buf[i + 5] == '#')
+				c++;
 		}
-		i++;
 	}
 	if (c == 6 || c == 8)
 		return (1);
@@ -95,7 +90,7 @@ int		checkinput(char *buf)
 	return (1);
 }
 
-char	**make2darray(char *buf)
+char	**make2darray(char *buf, int *count)
 {
 	char	**to_ret;
 	int		i;
@@ -115,7 +110,7 @@ char	**make2darray(char *buf)
 			curr_ch++;
 		}
 	}
-	to_ret[i] = NULL;
+	*count = curr_ch / 16;
 	return (to_ret);
 }
 
@@ -125,20 +120,19 @@ int		main(int argc, char **argv)
 	short	rd;
 	char	*buf;
 	char	**twodshapes;
-	int		i;
+	int		count;
 
-	i = 0;
 	if (argc != 2 || !argv[0])
 		ft_errorexit("usage: fillit <filename>");
 	buf = ft_strnew(555);
+	count = 0;
 	if ((fd = open(argv[1], O_RDONLY)) >= 0)
 	{
 		rd = read(fd, buf, 555);
 		if (checkinput(buf) == 1)
 		{
-			twodshapes = make2darray(buf);
-			while (twodshapes[i])
-				ft_putstr(twodshapes[i++]);
+			twodshapes = make2darray(buf, &count);
+			solve(twodshapes, count);
 		}
 		else
 			ft_errorexit("error");
