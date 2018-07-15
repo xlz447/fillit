@@ -10,7 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-char		**new_map(int const size)
+#include "fillit.h"
+#include <stdio.h>
+int	g_res;
+
+char		**emptymap(int const size)
 {
 	char	**map;
 	int		i;
@@ -44,32 +48,115 @@ void	freemap(char **map, int size)
 	while (i < size)
 		free(map[i++]);
 	free(map);
+	map = NULL;
 }
 
-int		trymap(char **shapes, char **map, int c)
+
+void	rmshape(char **m, char index, int s)
 {
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while (i < s)
+	{
+		while (j < s)
+		{
+			if (m[i][j] == 'A' + index)
+				m[i][j] = '.';
+				j++;
+		}
+		i++;
+	}
+}
+
+int		tryshape(char *sh, char **m, int mc)
+{
+	int i;
+	int fp;
+	int s;
+	//printf("Trying in %s in pos %i\n", sh, mc);
+	fp = 0;
+	s = ft_strlen(m[0]);
+	while (sh[fp] == '.')
+		fp++;
+	i = 0;
+	while (i < 16)
+	{
+		if (sh[i] != '.')
+		{
+			//printf("i = %i\n", i);
+			//printf("x: %i, y: %i\n", mc / s + i / 4 - fp / 4, mc % s + i % 4 - fp % 4);
+			if (mc / s + i / 4 - fp / 4 >= s ||
+				mc % s + i % 4 - fp % 4 >= s ||
+				m[mc / s + i / 4 - fp / 4][mc % s + i % 4 - fp % 4] != '.')
+			{
+				//printf("FAILED\n");
+				return (0);
+			}
+		}
+		i++;
+	}
+	i = 0;
+	while (sh[i])
+	{
+		if (sh[i] != '.')
+			m[mc / s + i / 4 - fp / 4][mc % s + i % 4 - fp % 4] = sh[i];
+		i++;
+	}
 	return (1);
 }
 
-void	solve(char **shapes, int c)
+void		trymap(char **shapes, char **map, int pindex, int shapecount)
+{
+	int	mapcoor;
+	int mapsize;
+
+	mapsize = ft_strlen(map[0]);
+	mapcoor = 0;
+	while (mapcoor < mapsize * mapsize)
+	{
+		if (tryshape(shapes[pindex], map, mapcoor) == 1) // if i can put in this piece
+		{
+			//printf("\nPut in %i in pos %i\n", pindex, mapcoor);
+			if (pindex != shapecount - 1)// if not last piece, put in current piece and try the next piece
+				trymap(shapes, map, pindex + 1, shapecount);
+			else
+			{
+				g_res = 1;
+			}
+		}
+		if (g_res)
+			return ;
+		mapcoor++; // if cannot fit in try next coordinate
+	}
+	rmshape(map, pindex, mapsize);
+}
+
+void	solve(char **shapes, int shapecount)
 {
 	char	**map;
 	int		mapsize;
 	int		i;
 
 	mapsize = 2;
-	while (mapsize * mapsize < c * 4)
+	while (mapsize * mapsize < shapecount * 4)
 		mapsize++;
-
+	g_res = 0;
 	while (42)
 	{
 		map = emptymap(mapsize);
-		if (trymap(shapes, map, c))
+		trymap(shapes, map, 0, shapecount);
+		if (g_res)
 			break ;
-		freemap(map);
+		freemap(map, mapsize);
+		mapsize++;
 	}
-
 	i = 0;
-	while (solution[i])
-		ft_putstr(solution[i++]);
+	while (map[i])
+	{
+		ft_putstr(map[i++]);
+		ft_putchar('\n');
+	}
 }

@@ -33,7 +33,7 @@ OBJ_NAME	=	$(SRC_NAME:.c=.o)
 
 INC_NAME	=	fillit.h
 
-SRC_NAME	=	input.c
+SRC_NAME	=	input.c solve.c
 
 all: $(NAME)
 

@@ -106,7 +106,10 @@ char	**make2darray(char *buf, int *count)
 	{
 		if (buf[i] != '\n')
 		{
-			to_ret[curr_ch / 16][curr_ch % 16] = buf[i];
+			if (buf[i] == '.')
+				to_ret[curr_ch / 16][curr_ch % 16] = buf[i];
+			else
+				to_ret[curr_ch / 16][curr_ch % 16] = 'A' + ((curr_ch / 16));
 			curr_ch++;
 		}
 	}
