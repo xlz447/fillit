@@ -6,7 +6,7 @@
 /*   By: xzhu <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/09 20:46:22 by xzhu              #+#    #+#             */
-/*   Updated: 2018/07/09 20:46:24 by xzhu             ###   ########.fr       */
+/*   Updated: 2018/07/16 14:41:31 by xzhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	*ft_memalloc(size_t size)
 		return (NULL);
 	else
 	{
-		bzero(out, size);
+		ft_bzero(out, size);
 		return (out);
 	}
 }

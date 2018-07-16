@@ -11,10 +11,8 @@
 /* ************************************************************************** */
 
 #include "fillit.h"
-#include <stdio.h>
-int	g_res;
 
-char		**emptymap(int const size)
+char	**emptymap(int const size)
 {
 	char	**map;
 	int		i;
@@ -40,75 +38,53 @@ char		**emptymap(int const size)
 	return (map);
 }
 
-void	freemap(char **map, int size)
-{
-	int		i;
-
-	i = 0;
-	while (i < size)
-		free(map[i++]);
-	free(map);
-	map = NULL;
-}
-
-
 void	rmshape(char **m, char index, int s)
 {
 	int i;
 	int j;
 
 	i = 0;
-	j = 0;
 	while (i < s)
 	{
+		j = 0;
 		while (j < s)
 		{
-			if (m[i][j] == 'A' + index)
+			if (m[i][j] == ('A' + index))
 				m[i][j] = '.';
-				j++;
+			j++;
 		}
 		i++;
 	}
 }
 
-int		tryshape(char *sh, char **m, int mc)
+int		tryshape(char *sp, char **m, int mc)
 {
 	int i;
-	int fp;
+	int fs;
 	int s;
-	//printf("Trying in %s in pos %i\n", sh, mc);
-	fp = 0;
+
+	fs = 0;
 	s = ft_strlen(m[0]);
-	while (sh[fp] == '.')
-		fp++;
+	while (sp[fs] == '.')
+		fs++;
 	i = 0;
 	while (i < 16)
 	{
-		if (sh[i] != '.')
-		{
-			//printf("i = %i\n", i);
-			//printf("x: %i, y: %i\n", mc / s + i / 4 - fp / 4, mc % s + i % 4 - fp % 4);
-			if (mc / s + i / 4 - fp / 4 >= s ||
-				mc % s + i % 4 - fp % 4 >= s ||
-				m[mc / s + i / 4 - fp / 4][mc % s + i % 4 - fp % 4] != '.')
-			{
-				//printf("FAILED\n");
+		if (sp[i] != '.')
+			if (mc / s + i / 4 - fs / 4 >= s ||
+				mc % s + i % 4 - fs % 4 >= s ||
+				m[mc / s + i / 4 - fs / 4][mc % s + i % 4 - fs % 4] != '.')
 				return (0);
-			}
-		}
 		i++;
 	}
-	i = 0;
-	while (sh[i])
-	{
-		if (sh[i] != '.')
-			m[mc / s + i / 4 - fp / 4][mc % s + i % 4 - fp % 4] = sh[i];
-		i++;
-	}
+	i = -1;
+	while (sp[++i])
+		if (sp[i] != '.')
+			m[mc / s + i / 4 - fs / 4][mc % s + i % 4 - fs % 4] = sp[i];
 	return (1);
 }
 
-void		trymap(char **shapes, char **map, int pindex, int shapecount)
+int		trymap(char **shapes, char **map, int shapeindex, int shapecount)
 {
 	int	mapcoor;
 	int mapsize;
@@ -117,21 +93,16 @@ void		trymap(char **shapes, char **map, int pindex, int shapecount)
 	mapcoor = 0;
 	while (mapcoor < mapsize * mapsize)
 	{
-		if (tryshape(shapes[pindex], map, mapcoor) == 1) // if i can put in this piece
+		if (tryshape(shapes[shapeindex], map, mapcoor) == 1)
 		{
-			//printf("\nPut in %i in pos %i\n", pindex, mapcoor);
-			if (pindex != shapecount - 1)// if not last piece, put in current piece and try the next piece
-				trymap(shapes, map, pindex + 1, shapecount);
-			else
-			{
-				g_res = 1;
-			}
+			if (shapeindex == shapecount - 1 ||
+				trymap(shapes, map, shapeindex + 1, shapecount))
+				return (1);
+			rmshape(map, shapeindex, mapsize);
 		}
-		if (g_res)
-			return ;
-		mapcoor++; // if cannot fit in try next coordinate
+		mapcoor++;
 	}
-	rmshape(map, pindex, mapsize);
+	return (0);
 }
 
 void	solve(char **shapes, int shapecount)
@@ -143,20 +114,19 @@ void	solve(char **shapes, int shapecount)
 	mapsize = 2;
 	while (mapsize * mapsize < shapecount * 4)
 		mapsize++;
-	g_res = 0;
 	while (42)
 	{
 		map = emptymap(mapsize);
-		trymap(shapes, map, 0, shapecount);
-		if (g_res)
+		if (trymap(shapes, map, 0, shapecount))
 			break ;
-		freemap(map, mapsize);
+		i = 0;
+		while (i < mapsize)
+			free(map[i++]);
+		free(map);
+		map = NULL;
 		mapsize++;
 	}
 	i = 0;
 	while (map[i])
-	{
-		ft_putstr(map[i++]);
-		ft_putchar('\n');
-	}
+		ft_putendl(map[i++]);
 }
