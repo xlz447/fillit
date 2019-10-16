@@ -127,12 +127,12 @@ int		main(int argc, char **argv)
 
 	if (argc != 2 || !argv[0])
 		ft_errorexit("usage: fillit <filename>");
-	buf = ft_strnew(555);
+	buf = ft_strnew(546);
 	count = 0;
 	if ((fd = open(argv[1], O_RDONLY)) >= 0)
 	{
-		rd = read(fd, buf, 555);
-		if (checkinput(buf) == 1)
+		rd = read(fd, buf, 546);
+		if (rd < 546 && checkinput(buf) == 1)
 		{
 			twodshapes = make2darray(buf, &count);
 			solve(twodshapes, count);
